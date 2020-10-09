@@ -9,9 +9,9 @@ extra-source-files:  CHANGELOG.md, README.md
 
 executable nix-buildkite
   main-is:             Main.hs
-  build-depends:   aeson ^>= 1.4.6.0
+  build-depends:   aeson ^>= 1.4.6.0 || ^>= 1.5.4.0
                  , algebraic-graphs ^>= 0.5
-                 , base ^>= 4.12
+                 , base ^>= 4.12 || ^>= 4.13 || ^>= 4.14
                  , containers ^>= 0.6.0.1
                  , filepath ^>= 1.4.2.1
                  , process ^>= 1.6.5.0
