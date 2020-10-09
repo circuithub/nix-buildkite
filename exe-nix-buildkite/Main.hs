@@ -7,11 +7,10 @@ module Main ( main ) where
 
 -- algebraic-graphs
 import Algebra.Graph.AdjacencyMap ( AdjacencyMap, edge, empty, hasVertex, overlay, overlays )
-import Algebra.Graph.AdjacencyMap.Algorithm ( dfsForest, reachable )
-import Algebra.Graph.Export.Dot
+import Algebra.Graph.AdjacencyMap.Algorithm ( reachable )
 
 -- aeson
-import Data.Aeson
+import Data.Aeson ( Value(..), decodeStrict )
 
 -- attoparsec
 import Data.Attoparsec.Text ( parseOnly )
@@ -21,16 +20,14 @@ import Data.Char
 import Data.Foldable ( fold, for_, traverse_ )
 import Data.Function ( (&) )
 import Data.Functor ( (<&>) )
-import Data.Maybe ( fromMaybe, listToMaybe, mapMaybe )
+import Data.Maybe ( fromMaybe, listToMaybe )
 import Data.Traversable ( for )
-import Debug.Trace
 import qualified Prelude
 import Prelude hiding ( getContents, lines, readFile, words )
+import System.Environment ( getArgs )
 
 -- containers
-import Data.Map ( Map )
 import qualified Data.Map as Map
-import Data.Tree
 
 -- filepath
 import System.FilePath
@@ -42,14 +39,12 @@ import Nix.Derivation
 import System.Process
 
 -- text
-import Data.Text ( Text, lines, pack, unpack, words )
+import Data.Text ( Text, pack, unpack )
 import Data.Text.Encoding
-import Data.Text.IO ( getContents, readFile )
+import Data.Text.IO ( readFile )
 
 -- unordered-containers
 import qualified Data.HashMap.Strict as HashMap
-
-import System.Environment ( getArgs )
 
 
 main :: IO ()
