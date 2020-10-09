@@ -1,4 +1,4 @@
-# nix-buildkite
+# nix-buildkite [![Build status](https://badge.buildkite.com/7918a1ba68d299f83ccc990292a97fa6eecd251703b2ca9427.svg)](https://buildkite.com/circuithub/nix-buildkite)
 
 `nix-buildkite` is a tool that can take a Nix expression that describes a set of
 builds and transforms them into separate Buildkite jobs. `nix-buildkite`
