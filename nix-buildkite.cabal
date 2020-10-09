@@ -1,0 +1,23 @@
+cabal-version:       2.0
+name:                nix-buildkite
+version:             0.1.0.0
+license-file:        LICENSE
+author:              CircuitHub
+maintainer:          oliver.charles@circuithub.com
+build-type:          Simple
+extra-source-files:  CHANGELOG.md, README.md
+
+executable nix-buildkite
+  main-is:             Main.hs
+  build-depends:   aeson ^>= 1.4.6.0
+                 , algebraic-graphs ^>= 0.5
+                 , base ^>= 4.12
+                 , containers ^>= 0.6.0.1
+                 , filepath ^>= 1.4.2.1
+                 , process ^>= 1.6.5.0
+                 , text ^>= 1.2.3.1
+                 , unordered-containers ^>= 0.2.10.0
+                 , attoparsec ^>= 0.13.2.3
+                 , nix-derivation ^>= 1.1.1
+  default-language:    Haskell2010
+  hs-source-dirs:      exe-nix-buildkite
