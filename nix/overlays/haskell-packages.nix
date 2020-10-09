@@ -6,13 +6,16 @@ let
 
   inherit (haskellPackages) callCabal2nix;
 
-  inherit (haskell.lib) packagesFromDirectory;
+  inherit (haskell.lib) appendConfigureFlag packagesFromDirectory;
 
   inherit (super.lib) composeExtensions;
+  
+  WError =
+    drv: appendConfigureFlag drv "--ghc-option=-Werror";
 
   configurations =
     self: super: {
-      nix-buildkite = callCabal2nix "nix-buildkite" (builtins.path { path = ../../.; name = "nix-buildkite"; }) {};
+      nix-buildkite = WError (callCabal2nix "nix-buildkite" (builtins.path { path = ../../.; name = "nix-buildkite"; }) {});
     };
 
 in
