@@ -1,8 +1,6 @@
 {-# language BlockArguments #-}
 {-# language LambdaCase #-}
 {-# language NamedFieldPuns #-}
-{-# language ViewPatterns #-}
-{-# language TypeApplications #-}
 {-# language OverloadedStrings #-}
 
 module Main ( main ) where
@@ -93,12 +91,12 @@ main = do
     putStrLn $ "    command: nix-store -r" <> drvPath
     putStrLn $ "    key: " <> stepify drvPath
 
-    let dependencies = filter (`elem` (map snd drvs)) (drop 1 (reachable drvPath g))
+    let dependencies = filter (`elem` map snd drvs) (drop 1 (reachable drvPath g))
     case dependencies of
       [] -> return ()
       _ -> do
         putStrLn $ "    depends_on:"
-        traverse_ (putStrLn . ("      - " <>)) (map stepify dependencies)
+        traverse_ (putStrLn . ("      - " <>) . stepify) dependencies
 
 
 stepify :: String -> String
@@ -112,7 +110,7 @@ stepify = map replace . takeBaseName
 
 add :: AdjacencyMap FilePath -> FilePath -> IO (AdjacencyMap FilePath)
 add g drvPath =
-  if hasVertex drvPath g then do
+  if hasVertex drvPath g then
     return g
 
   else
