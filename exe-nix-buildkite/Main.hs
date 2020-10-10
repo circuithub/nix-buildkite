@@ -10,14 +10,14 @@ import Algebra.Graph.AdjacencyMap ( AdjacencyMap, edge, empty, hasVertex, overla
 import Algebra.Graph.AdjacencyMap.Algorithm ( reachable )
 
 -- aeson
-import Data.Aeson ( Value(..), decodeStrict )
+import Data.Aeson ( Value(..), (.=), decodeStrict, encode, object )
 
 -- attoparsec
 import Data.Attoparsec.Text ( parseOnly )
 
 -- base
 import Data.Char
-import Data.Foldable ( fold, for_, traverse_ )
+import Data.Foldable ( fold )
 import Data.Function ( (&) )
 import Data.Functor ( (<&>) )
 import Data.Maybe ( fromMaybe, listToMaybe )
@@ -25,6 +25,9 @@ import Data.Traversable ( for )
 import qualified Prelude
 import Prelude hiding ( getContents, lines, readFile, words )
 import System.Environment ( getArgs )
+
+-- bytestring
+import qualified Data.ByteString.Lazy
 
 -- containers
 import qualified Data.Map as Map
@@ -80,19 +83,19 @@ main = do
 
   g <- foldr (\(_, drv) m -> m >>= \g -> add g drv) (pure empty) drvs
 
-  putStrLn "steps:"
-  for_ drvs \(label, drvPath) -> do
-    putStrLn $ "  - label: " <> tail (unpack label)
-    putStrLn $ "    command: nix-store -r" <> drvPath
-    putStrLn $ "    key: " <> stepify drvPath
+  let steps = map (uncurry step) drvs
+        where
+          step label drvPath =
+            object
+              [ "label" .= tail (unpack label)
+              , "command" .= String (pack ("nix-store -r" <> drvPath))
+              , "key" .= stepify drvPath
+              , "depends_on" .= dependencies
+              ]
+            where
+              dependencies = map stepify $ filter (`elem` map snd drvs) $ drop 1 $ reachable drvPath g
 
-    let dependencies = filter (`elem` map snd drvs) (drop 1 (reachable drvPath g))
-    case dependencies of
-      [] -> return ()
-      _ -> do
-        putStrLn $ "    depends_on:"
-        traverse_ (putStrLn . ("      - " <>) . stepify) dependencies
-
+  Data.ByteString.Lazy.putStr $ encode $ object [ "steps" .= steps ]
 
 stepify :: String -> String
 stepify = map replace . takeBaseName
