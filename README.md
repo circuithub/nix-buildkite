@@ -25,16 +25,17 @@ in
 }
 ```
 
-## `.buildkite/pipeline.sh`
+## `.buildkite/pipeline.yml`
 
-Next, add a `.buildkite/pipeline.sh` script with the following contents:
+Next, add a `.buildkite/pipeline.yml` file with the following contents:
 
-``` shell
-#!/usr/bin/env bash
-
-nix-build -E 'import (builtins.fetchGit { url = git://github.com/circuithub/nix-buildkite; })' -o nix-buildkite
-./nix-buildkite | buildkite-agent pipeline upload
-rm nix-buildkite
+``` yaml
+steps:
+  - command: nix-buildkite
+    label: ":nixos: :buildkite:"
+    plugins:
+      circuithub/nix-buildkite:
+        file: jobs.nix
 ```
 
 ## Add Your Pipeline
@@ -42,15 +43,15 @@ rm nix-buildkite
 The final step is to add your pipeline to Buildkite. See
 https://buildkite.com/docs/pipelines/defining-steps#getting-started for details
 on how to do this. Once you have a pipeline created, make sure that the only
-step declared in the pipeline configuration in Buildkites UI is:
+step declared in the pipeline configuration in Buildkite's UI is:
 
 ``` yaml
 steps:
-  - command: .buildkite/pipeline.sh
-    label: ":pipeline: Upload"
+  - command: buildkite-agent pipeline upload
+    label: ":pipeline:"
 ```
 
 ## Sit Back and Enjoy!
 
-That's it! The following steps should give you a working pipeline that builds
+That's it! Following these steps should give you a working pipeline that builds
 `nix-buildkite`.

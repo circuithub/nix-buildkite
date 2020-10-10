@@ -1,0 +1,6 @@
+steps:
+  - command: nix-buildkite
+    label: ":nixos: :buildkite:"
+    plugins:
+      circuithub/nix-buildkite:
+        file: jobs.nix
