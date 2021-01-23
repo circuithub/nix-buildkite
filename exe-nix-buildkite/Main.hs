@@ -58,28 +58,9 @@ main = do
   -- things that may need to be built.
   inputDrvPaths <- Prelude.lines <$> readProcess "nix-instantiate" [ jobsExpr ] ""
 
-  -- Build a 'Map StorePath DrvPath'. This will serve the role of
-  -- 'nix-store --query --deriver', but nix-store won't work because Nix itself
-  -- has no mapping from store paths to derivations yet.
-  storePathToDrv <- fold <$> for inputDrvPaths \drvPath ->
-    fmap (parseOnly parseDerivation) (readFile drvPath) <&> foldMap \Derivation{ outputs } ->
-      outputs & foldMap \DerivationOutput{ path } ->
-        Map.singleton path drvPath
-
-  -- Re-run nix-instantiate, but with --eval --strict --json. This should give
-  -- us back a JSON object that is a tree with leaves that are store paths.
-  jsonString <- readProcess "nix-instantiate" [ "--eval", "--strict", "--json", jobsExpr ] ""
-
-  json <-
-    decodeStrict (encodeUtf8 (pack jsonString))
-      & maybe (fail "Could not parse JSON") return
-
-  let drvs :: [(Text, FilePath)]
-      drvs = go "" json
-        where
-          go prefix (Object kv)        = HashMap.foldlWithKey' (\x k v -> x <> go (prefix <> "." <> k) v) [] kv
-          go prefix (String storePath) = foldMap pure $ (,) <$> pure prefix <*> Map.lookup (unpack storePath) storePathToDrv
-          go _ _                       = mempty
+  -- Build an association list of a job name and the derivation that should be
+  -- realised for that job.
+  let drvs = inputDrvPaths <&> \drvPath -> (takeFileName drvPath, drvPath)
 
   g <- foldr (\(_, drv) m -> m >>= \g -> add g drv) (pure empty) drvs
 
